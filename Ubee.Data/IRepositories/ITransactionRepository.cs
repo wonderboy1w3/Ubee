@@ -1,4 +1,6 @@
-﻿using System.Transactions;
+﻿
+
+using Ubee.Domain.Entities;
 
 namespace Ubee.Data.IRepositories;
 
