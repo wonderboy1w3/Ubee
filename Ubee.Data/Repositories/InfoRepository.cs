@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Ubee.Data.Contexts;
 using Ubee.Data.IRepositories;
+using Ubee.Domain.Configurations;
 using Ubee.Domain.Entities;
 
 namespace Ubee.Data.Repositories
@@ -15,6 +16,21 @@ namespace Ubee.Data.Repositories
 
     {
         private readonly AppDbContext appDbContext = new AppDbContext(); 
+
+        public async ValueTask<Info> InsertInfoAsync(Info info)
+        {
+            EntityEntry<Info> entity = await this.appDbContext.Infos.AddAsync(info);
+            await appDbContext.SaveChangesAsync();
+            return entity.Entity;
+        }
+
+        public async ValueTask<Info> UpdateInfoAsync(Info info)
+        {
+            EntityEntry<Info> entity = this.appDbContext.Infos.Update(info);
+            await appDbContext.SaveChangesAsync();
+            return entity.Entity;
+        }
+
         public async ValueTask<bool> DeleteInfoAysnyc(long id)
         {
             Info entity =
@@ -27,24 +43,10 @@ namespace Ubee.Data.Repositories
             return true;
         }
 
-        public async ValueTask<Info> InsertInfoAsync(Info info)
-        {
-            EntityEntry<Info> entity = await this.appDbContext.Infos.AddAsync(info);
-            await appDbContext.SaveChangesAsync();
-            return entity.Entity;
-        }
+        public async ValueTask<Info> SelectInfoById(Predicate<Info> predicate) =>
+            await this.appDbContext.Infos.Where(info => info.IsActive).FirstOrDefaultAsync(info => predicate(info));
 
         public IQueryable<Info> SelectAllInfos() =>
-            this.appDbContext.Infos;
-
-        public async ValueTask<Info> SelectInfoById(Predicate<Info> predicate) =>
-            await this.appDbContext.Infos.FirstOrDefaultAsync(info => predicate(info));
-
-        public async ValueTask<Info> UpdateInfoAsync(Info info)
-        {
-            EntityEntry<Info> entity = this.appDbContext.Infos.Update(info);
-            await appDbContext.SaveChangesAsync();
-            return entity.Entity;
-        }
+            this.appDbContext.Infos.Where(info => info.IsActive);
     }
 }

@@ -1,4 +1,5 @@
-﻿using Ubee.Domain.Entities;
+﻿using Ubee.Domain.Configurations;
+using Ubee.Domain.Entities;
 
 namespace Ubee.Data.IRepositories;
 

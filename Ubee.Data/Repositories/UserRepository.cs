@@ -37,7 +37,12 @@ public class UserRepository : IUserRepository
     }
 
     public async ValueTask<User> SelectUserAsync(Predicate<User> predicate) =>
-        await this.appDbContext.Users.FirstOrDefaultAsync(user => predicate(user));
+        await this.appDbContext.Users.Where(user => user.IsActive).FirstOrDefaultAsync(user => predicate(user));
 
-    public IQueryable<User> SelectAllUsers() => this.appDbContext.Users;
+    public IQueryable<User> SelectAllUsers()
+    {
+        this.appDbContext.Users.Where(user => user.IsActive);
+        var query = "select * from \"Users\" where \"Firstname\" like '%o%'";
+        return this.appDbContext.Users.FromSqlRaw(query);
+    }
 }
