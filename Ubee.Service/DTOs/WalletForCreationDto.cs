@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Ubee.Domain.Entities;
 
-namespace Ubee.Service.DTOs
+namespace Ubee.Service.DTOs;
+
+public class WalletForCreationDto
 {
-    internal class WalletForCreationDto
-    {
-    }
+    public string Name { get; set; }
+    public string Currency { get; set; }
+    public long UserId { get; set; }
 }

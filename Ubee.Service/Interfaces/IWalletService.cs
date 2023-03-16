@@ -1,12 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Ubee.Domain.Configurations;
+using Ubee.Service.DTOs;
+using Ubee.Service.Helpers;
 
-namespace Ubee.Service.Interfaces
+namespace Ubee.Service.Interfaces;
+
+public interface IWalletService
 {
-    internal class IWalletService
-    {
-    }
+    ValueTask<Response<WalletDto>> AddWalletAsync(WalletForCreationDto walletForCreationDto);
+    ValueTask<Response<WalletDto>> ModifyWalletAsync(long id, WalletForCreationDto walletForCreationDto);
+    ValueTask<Response<bool>> DeleteWalletAsync(long id);
+    ValueTask<Response<WalletDto>> GetWalletByIdAsync(long id);
+    ValueTask<Response<List<WalletDto>>> GetAllWalletAsync();
 }
