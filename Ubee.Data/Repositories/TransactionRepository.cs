@@ -1,9 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Ubee.Data.Contexts;
+using Ubee.Data.IRepositories;
 using Ubee.Domain.Entities;
 namespace Ubee.Data.Repositories;
-public class TransactionRepository
+public class TransactionRepository : ITransactionRepository
 {
     private readonly AppDbContext appDbContext = new AppDbContext();
 
@@ -36,6 +37,6 @@ public class TransactionRepository
     public async ValueTask<Transaction> SelectTransactionById(Predicate<Transaction> predicate) =>
         await this.appDbContext.Transactions.Where(info => info.IsActive).FirstOrDefaultAsync(tr => predicate(tr));
 
-    public IQueryable<Transaction> SelectAllInfos() =>
+    public IQueryable<Transaction> SelectAllTransactions() =>
         this.appDbContext.Transactions.Where(tr => tr.IsActive);
 }

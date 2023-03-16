@@ -10,5 +10,5 @@ public interface ITransactionService
     ValueTask<Response<TransactionDto>> ModifyTransactionAsync(long id, TransactionForCreationDto transactionForCreationDto);
     ValueTask<Response<bool>> DeleteTransactionAsync(long id);
     ValueTask<Response<TransactionDto>> GetTransactionByIdAsync(long id);
-    ValueTask<Response<List<TransactionDto>>> GetAllTransactionAsync(PaginationParams @params, string search = null);
+    ValueTask<Response<List<TransactionDto>>> GetAllTransactionAsync();
 }
