@@ -10,7 +10,7 @@ public class MappingProfile : Profile
     {
         CreateMap<UserForCreationDto, User>().ReverseMap();
         CreateMap<UserDto, User>().ReverseMap();
-        CreateMap<TransactionDto, Transaction>().ReverseMap();
-        CreateMap<TransactionForCreationDto, TransactionDto>().ReverseMap();
+        CreateMap<WalletDto, Wallet>().ReverseMap();
+        CreateMap<WalletForCreationDto, Wallet>().ReverseMap();
     }
 }

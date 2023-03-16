@@ -11,7 +11,8 @@ using Ubee.Service.Interfaces;
 namespace Ubee.Service.Services;
 public class TransactionService : ITransactionService
 {
-    private readonly TransactionRepository transactionRepository = new TransactionRepository();
+    private readonly ITransactionRepository transactionRepository = new TransactionRepository();
+    private readonly IWalletRepository walletRepository = new WalletRepository();
     private readonly IMapper mapper;
     public TransactionService(IMapper mapper)
     {
@@ -20,34 +21,66 @@ public class TransactionService : ITransactionService
 
     public async ValueTask<Response<TransactionDto>> AddTransactionAsync(TransactionForCreationDto transactionForCreationDto)
     {
-        var user = await this.transactionRepository.SelectTransactionById(user =>
-            user.Username.Equals(transactionForCreationDto.Username) ||
-            user.Phone.Equals(transactionForCreationDto.Phone));
-
-        if (user is not null)
+        if(transactionForCreationDto.Type == Domain.Enums.TransactionType.Income)
+        {
+            var res = await this.walletRepository.SelectWalletAsync(wl => wl.Id == transactionForCreationDto.WalletId);
+            if(res is null)
+            {
+                return new Response<TransactionDto>
+                {
+                    Code = 404 ,
+                    Message = "Not found",
+                    Value = null
+                };
+            }
+            res.AvailableMoney += transactionForCreationDto.Amount;
+            await this.walletRepository.UpdateWalletAsync(res);
+            var mappedRes = mapper.Map<TransactionDto>(transactionForCreationDto);
             return new Response<TransactionDto>
             {
-                Code = 404,
-                Message = "User is already existed",
-                Value = (UserDto)user
+                Code = 200,
+                Message = "Success",
+                Value = mappedRes
+            };
+        }
+        else
+        {
+            var res = await this.walletRepository.SelectWalletAsync(wl => wl.Id == transactionForCreationDto.WalletId);
+            if (res is null)
+            {
+                return new Response<TransactionDto>
+                {
+                    Code = 404,
+                    Message = "Not found",
+                    Value = null
+                };
+            }
+            if (res.AvailableMoney < transactionForCreationDto.Amount)
+            {
+                return new Response<TransactionDto>
+                {
+                    Code = 404,
+                    Message = "There are insufficient funds in your account",
+                    Value = null
+                };
+            }
+            res.AvailableMoney -= transactionForCreationDto.Amount;
+            await this.walletRepository.UpdateWalletAsync(res);
+            var mappedRes = mapper.Map<TransactionDto>(transactionForCreationDto);
+            return new Response<TransactionDto>
+            {
+                Code = 200,
+                Message = "Success",
+                Value = mappedRes
             };
 
+        }
 
-        var mappedUser = this.mapper.Map<Transaction>(transactionForCreationDto);
-        mappedUser.Password = transactionForCreationDto.Password.Encrypt();
-        var addedUser = await this.userRepository.InsertUserAsync(mappedUser);
-        var resultDto = this.mapper.Map<TransactionDto>(addedUser);
-        return new Response<TransactionDto>
-        {
-            Code = 200,
-            Message = "Success",
-            Value = resultDto
-        };
     }
 
     public async ValueTask<Response<bool>> DeleteTransactionAsync(long id)
     {
-        User user = await this.Repository.SelectTransactionAsync(user => user.Id.Equals(id));
+        Transaction user = await this.transactionRepository.SelectTransactionById(user => user.Id.Equals(id));
         if (user is null)
             return new Response<bool>
             {
@@ -56,7 +89,7 @@ public class TransactionService : ITransactionService
                 Value = false
             };
 
-        await this.userRepository.DeleteUserAysnyc(id);
+        await this.transactionRepository.DeleteTransactionAysnyc(id);
         return new Response<bool>
         {
             Code = 200,
@@ -65,20 +98,32 @@ public class TransactionService : ITransactionService
         };
     }
 
-    public async ValueTask<Response<List<UserDto>>> GetAllUserAsync(PaginationParams @params, string search = null)
+    public async ValueTask<Response<List<TransactionDto>>> GetAllTransactionAsync()
     {
-        var users = await this.userRepository.SelectAllUsers().ToPagedList(@params).ToListAsync();
-        if (users.Any())
-            return new Response<List<UserDto>>
+        var transactions = transactionRepository.SelectAllTransactions().ToList();
+        var mappedWallets = mapper.Map<List<TransactionDto>>(transactions);
+
+        return new Response<List<TransactionDto>>
+        {
+            Code = 200,
+            Message = "Success",
+            Value = mappedWallets
+        };
+    }
+
+    public async ValueTask<Response<TransactionDto>> GetTransactionByIdAsync(long id)
+    {
+        Transaction user = await this.transactionRepository.SelectTransactionById(tr => tr.Id.Equals(id));
+        if (user is null)
+            return new Response<TransactionDto>
             {
                 Code = 404,
-                Message = "Success",
+                Message = "Couldn't find for given ID",
                 Value = null
             };
 
-        var result = users.Where(user => user.Firstname.Contains(search, StringComparison.OrdinalIgnoreCase));
-        var mappedUsers = this.mapper.Map<List<UserDto>>(result);
-        return new Response<List<UserDto>>
+        var mappedUsers = this.mapper.Map<TransactionDto>(user);
+        return new Response<TransactionDto>
         {
             Code = 200,
             Message = "Success",
@@ -86,40 +131,20 @@ public class TransactionService : ITransactionService
         };
     }
 
-    public async ValueTask<Response<UserDto>> GetUserByIdAsync(long id)
+    public async ValueTask<Response<TransactionDto>> ModifyTransactionAsync(long id, TransactionForCreationDto transactionForCreationDto)
     {
-        User user = await this.userRepository.SelectUserAsync(user => user.Id.Equals(id));
+        Transaction user = await this.transactionRepository.SelectTransactionById(tr => tr.Id.Equals(id));
         if (user is null)
-            return new Response<UserDto>
+            return new Response<TransactionDto>
             {
                 Code = 404,
                 Message = "Couldn't find for given ID",
                 Value = null
             };
 
-        var mappedUsers = this.mapper.Map<UserDto>(user);
-        return new Response<UserDto>
-        {
-            Code = 200,
-            Message = "Success",
-            Value = mappedUsers
-        };
-    }
-
-    public async ValueTask<Response<UserDto>> ModifyUserAsync(long id, UserForCreationDto userForCreationDto)
-    {
-        User user = await this.userRepository.SelectUserAsync(user => user.Id.Equals(id));
-        if (user is null)
-            return new Response<UserDto>
-            {
-                Code = 404,
-                Message = "Couldn't find for given ID",
-                Value = null
-            };
-
-        var updatedUser = await this.userRepository.UpdateUserAsync(user);
-        var mappedUsers = this.mapper.Map<UserDto>(updatedUser);
-        return new Response<UserDto>
+        var updatedUser = await this.transactionRepository.UpdateTransactionAsync(user);
+        var mappedUsers = this.mapper.Map<TransactionDto>(updatedUser);
+        return new Response<TransactionDto>
         {
             Code = 200,
             Message = "Success",
