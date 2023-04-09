@@ -11,11 +11,13 @@ namespace Ubee.Service.Services;
 
 public class WalletService : IWalletService
 {
-    private readonly IWalletRepository walletRepository = new WalletRepository();
-    private readonly IUserRepository userRepository = new UserRepository();
+
+    //I call the repository by constructor
+    private readonly IWalletRepository walletRepository;
     private readonly IMapper mapper;
-    public WalletService(IMapper mapper)
+    public WalletService(IWalletRepository walletRepository, IMapper mapper)
     {
+        this.walletRepository = walletRepository;
         this.mapper = mapper;
     }
 
