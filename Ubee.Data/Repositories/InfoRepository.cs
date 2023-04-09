@@ -43,7 +43,7 @@ namespace Ubee.Data.Repositories
             return true;
         }
 
-        public async ValueTask<Info> SelectInfoById(Predicate<Info> predicate) =>
+        public async ValueTask<Info> SelectInfoAsync(Predicate<Info> predicate) =>
             await this.appDbContext.Infos.Where(info => info.IsActive).FirstOrDefaultAsync(info => predicate(info));
 
         public IQueryable<Info> SelectAllInfos() =>

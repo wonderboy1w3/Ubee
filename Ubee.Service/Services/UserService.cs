@@ -13,10 +13,12 @@ namespace Ubee.Service.Services;
 
 public class UserService : IUserService
 {
-    private readonly IUserRepository userRepository = new UserRepository();
+    //I call the repository by constructor
+    private readonly IUserRepository userRepository;
     private readonly IMapper mapper;
-    public UserService(IMapper mapper)
+    public UserService(IUserRepository userRepository,IMapper mapper)
     {
+        this.userRepository = userRepository;
         this.mapper = mapper;
     }
 
