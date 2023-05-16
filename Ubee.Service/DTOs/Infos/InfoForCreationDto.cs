@@ -1,8 +1,8 @@
 ﻿using Ubee.Domain.Entities;
 
-namespace Ubee.Service.DTOs
+namespace Ubee.Service.DTOs.Infos
 {
-    public class InfoCreationDto
+    public class InfoForCreationDto
     {
         public decimal AnnualExpose { get; set; }
         public decimal MonthlyExpose { get; set; }

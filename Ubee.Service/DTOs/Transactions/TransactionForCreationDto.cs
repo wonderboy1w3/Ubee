@@ -1,6 +1,6 @@
 ﻿using Ubee.Domain.Enums;
 
-namespace Ubee.Service.DTOs;
+namespace Ubee.Service.DTOs.Transactions;
 public class TransactionForCreationDto
 {
     public decimal Amount { get; set; }
