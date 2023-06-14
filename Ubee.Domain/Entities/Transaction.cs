@@ -5,6 +5,8 @@ namespace Ubee.Domain.Entities;
 
 public class Transaction : Auditable
 {
+    public long CategoryDetailId { get; set; }
+    public CategoryDetail CategoryDetail { get; set; }
     public long WalletId { get; set; }
     public Wallet Wallet { get; set; }
     public decimal Amount { get; set; }
