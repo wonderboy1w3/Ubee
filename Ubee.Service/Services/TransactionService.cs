@@ -11,19 +11,19 @@ using Ubee.Service.Interfaces;
 namespace Ubee.Service.Services;
 public class TransactionService : ITransactionService
 {
-    private readonly ITransactionRepository transactionRepository = new TransactionRepository();
-    private readonly IRepository walletRepository = new Repository();
+    private readonly IRepository<Wallet> walletRepository;
     private readonly IMapper mapper;
-    public TransactionService(IMapper mapper)
+    public TransactionService(IMapper mapper, IRepository<Wallet> walletRepository)
     {
         this.mapper = mapper;
+        this.walletRepository = walletRepository;
     }
 
     public async ValueTask<Response<TransactionDto>> AddTransactionAsync(TransactionForCreationDto transactionForCreationDto)
     {
         if(transactionForCreationDto.Type == Domain.Enums.TransactionType.Income)
         {
-            var res = await this.walletRepository.SelectWalletAsync(wl => wl.Id == transactionForCreationDto.WalletId);
+            var res = await this.walletRepository.SelectAsync(wl => wl.Id == transactionForCreationDto.WalletId);
             if(res is null)
             {
                 return new Response<TransactionDto>
@@ -34,7 +34,7 @@ public class TransactionService : ITransactionService
                 };
             }
             res.AvailableMoney += transactionForCreationDto.Amount;
-            await this.walletRepository.UpdateWalletAsync(res);
+            await this.walletRepository.UpdateAsync(res);
             var mappedRes = mapper.Map<TransactionDto>(transactionForCreationDto);
             return new Response<TransactionDto>
             {
@@ -45,7 +45,7 @@ public class TransactionService : ITransactionService
         }
         else
         {
-            var res = await this.walletRepository.SelectWalletAsync(wl => wl.Id == transactionForCreationDto.WalletId);
+            var res = await this.walletRepository.SelectAsync(wl => wl.Id == transactionForCreationDto.WalletId);
             if (res is null)
             {
                 return new Response<TransactionDto>
@@ -65,7 +65,7 @@ public class TransactionService : ITransactionService
                 };
             }
             res.AvailableMoney -= transactionForCreationDto.Amount;
-            await this.walletRepository.UpdateWalletAsync(res);
+            await this.walletRepository.UpdateAsync(res);
             var mappedRes = mapper.Map<TransactionDto>(transactionForCreationDto);
             return new Response<TransactionDto>
             {
