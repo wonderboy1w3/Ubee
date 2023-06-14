@@ -2,7 +2,7 @@
 
 namespace Ubee.Data.IRepositories;
 
-public interface IWalletRepository
+public interface IRepository
 {
     ValueTask<Wallet> InsertWalletAsync(Wallet wallet);
     ValueTask<Wallet> UpdateWalletAsync(Wallet wallet);

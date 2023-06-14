@@ -6,7 +6,7 @@ using Ubee.Domain.Entities;
 
 namespace Ubee.Data.Repositories;
 
-public class WalletRepository : IWalletRepository
+public class Repository : IWalletRepository
 {
     private readonly AppDbContext appDbContext = new AppDbContext();
 

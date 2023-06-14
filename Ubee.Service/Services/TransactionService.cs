@@ -12,7 +12,7 @@ namespace Ubee.Service.Services;
 public class TransactionService : ITransactionService
 {
     private readonly ITransactionRepository transactionRepository = new TransactionRepository();
-    private readonly IWalletRepository walletRepository = new WalletRepository();
+    private readonly IRepository walletRepository = new Repository();
     private readonly IMapper mapper;
     public TransactionService(IMapper mapper)
     {

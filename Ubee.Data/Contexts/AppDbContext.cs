@@ -1,15 +1,15 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Ubee.Domain.Entities;
+﻿using Ubee.Domain.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace Ubee.Data.Contexts;
 
 public class AppDbContext : DbContext
 {
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
     {
-        string path = "Server=localhost; Database=UbeeDb; User Id=postgres; password=jama1226";
-        optionsBuilder.UseNpgsql(path);
+
     }
+    
 
     public DbSet<User> Users { get; set; }
     public DbSet<Wallet> Wallets { get; set; }
