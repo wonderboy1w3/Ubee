@@ -1,15 +1,6 @@
 ﻿
 using Ubee.Data.IRepositories;
 using Ubee.Data.Repositories;
-using Ubee.Service.Services;
+using Ubee.Domain.Entities;
 
-IUserRepository dbContext = new UserRepository();
-
-
-
-var users = dbContext.SelectAllUsers();
-
-foreach(var user in users)
-{
-    Console.WriteLine(user.Firstname);
-}
+IRepository<User> db;
