@@ -1,6 +1,8 @@
-﻿namespace Ubee.Domain.Entities;
+﻿using Ubee.Domain.Commons;
 
-public class Currency
+namespace Ubee.Domain.Entities;
+
+public class Currency : Auditable
 {
     public string Country { get; set; }
     public string Name { get; set; }

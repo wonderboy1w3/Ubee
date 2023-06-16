@@ -14,4 +14,8 @@
     <ProjectReference Include="..\Ubee.Data\Ubee.Data.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Helpers\" />
+  </ItemGroup>
+
 </Project>

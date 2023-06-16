@@ -1,133 +1,83 @@
 ﻿using AutoMapper;
-using Microsoft.EntityFrameworkCore;
-using Ubee.Data.IRepositories;
-using Ubee.Data.Repositories;
-using Ubee.Domain.Configurations;
 using Ubee.Domain.Entities;
-using Ubee.Service.DTOs;
+using Ubee.Data.IRepositories;
+using Ubee.Service.DTOs.Users;
+using Ubee.Service.Exceptions;
 using Ubee.Service.Extensions;
-using Ubee.Service.Helpers;
 using Ubee.Service.Interfaces;
+using Ubee.Domain.Configurations;
+using Microsoft.EntityFrameworkCore;
 
 namespace Ubee.Service.Services;
 
 public class UserService : IUserService
 {
-    //I call the repository by constructor
-    private readonly IUserRepository userRepository;
-    private readonly IMapper mapper;
-    public UserService(IUserRepository userRepository,IMapper mapper)
-    {
-        this.userRepository = userRepository;
-        this.mapper = mapper;
-    }
 
-    public async ValueTask<Response<UserDto>> AddUserAsync(UserForCreationDto userForCreationDto)
-    {
-        var user = await this.userRepository.SelectUserAsync(user =>
-            user.Username.Equals(userForCreationDto.Username) ||
-            user.Phone.Equals(userForCreationDto.Phone));
+	private readonly IMapper mapper;
+	private readonly IRepository<User> userReposotpry;
 
-        if (user is not null)
-            return new Response<UserDto>
-            {
-                Code = 404,
-                Message = "User is already existed",
-                Value = (UserDto)user
-            };
+	public UserService(IMapper mapper, IRepository<User> userRepository)
+	{
+		this.mapper = mapper;
+		this.userReposotpry = userRepository;
+	}
+	public async ValueTask<UserForResultDto> AddUserAsync(UserForCreationDto dto)
+	{
+		var user = await this.userReposotpry.SelectAsync(u => u.Username.ToLower() == dto.Username.ToLower());
+		if (user is not null)
+			throw new CustomException(409, "User is already exists");
+
+		var mappedUser = this.mapper.Map<User>(dto);
+		mappedUser.CreatedAt = DateTime.UtcNow;
+		var result = await this.userReposotpry.InsertAsync(mappedUser);
+		await this.userReposotpry.SaveAsync();
+
+		return this.mapper.Map<UserForResultDto>(result);
+	}
+
+	public async ValueTask<bool> RemoveUserAsync(long id)
+	{
+		var result = await this.userReposotpry.DeleteAysnyc(u => u.Id == id);
+		if (!result)
+			throw new CustomException(404, "User is not found");
+		await this.userReposotpry.SaveAsync();
+
+		return result;
+	}
 
 
-        var mappedUser = this.mapper.Map<User>(userForCreationDto);
-        mappedUser.Password = userForCreationDto.Password.Encrypt();
-        var addedUser = await this.userRepository.InsertUserAsync(mappedUser);
-        var resultDto = this.mapper.Map<UserDto>(addedUser);
-        return new Response<UserDto>
-        {
-            Code = 200,
-            Message = "Success",
-            Value = resultDto
-        };
-    }
+	public async ValueTask<IEnumerable<UserForResultDto>> RetrieveAllUserAsync(PaginationParams @params, string search = null)
+	{
+		var users = await this.userReposotpry.SelectAll()
+			.ToPagedList(@params).ToListAsync();
+		if (!string.IsNullOrWhiteSpace(search))
+		{
+			users = users.FindAll(u => u.Username.ToLower().Contains(search));
+		}
+		return this.mapper.Map<IEnumerable<UserForResultDto>>(users);
+	}
 
-    public async ValueTask<Response<bool>> DeleteUserAsync(long id)
-    {
-        User user = await this.userRepository.SelectUserAsync(user => user.Id.Equals(id));
-        if (user is null)
-            return new Response<bool>
-            {
-                Code = 404,
-                Message = "Couldn't find for given ID",
-                Value = false
-            };
+	public async ValueTask<UserForResultDto> RetrieveUserByIdAsync(long id)
+	{
+		var user = await this.userReposotpry.SelectAsync(u => u.Id == id);
+		if (user is null)
+			throw new CustomException(404, "User is not found ");
+		var result = this.mapper.Map<UserForResultDto>(user);
 
-        await this.userRepository.DeleteUserAysnyc(id);
-        return new Response<bool>
-        {
-            Code = 200,
-            Message = "Success",
-            Value = true
-        };
-    }
+		return result;
+	}
 
-    public async ValueTask<Response<List<UserDto>>> GetAllUserAsync(PaginationParams @params, string search = null)
-    {
-        var users = await this.userRepository.SelectAllUsers().ToPagedList(@params).ToListAsync();
-        if (users.Any())
-            return new Response<List<UserDto>>
-            {
-                Code = 404,
-                Message = "Success",
-                Value = null
-            };
 
-        var result = users.Where(user => user.Firstname.Contains(search, StringComparison.OrdinalIgnoreCase));
-        var mappedUsers = this.mapper.Map<List<UserDto>>(result);
-        return new Response<List<UserDto>>
-        {
-            Code = 200,
-            Message = "Success",
-            Value = mappedUsers
-        };
-    }
+	public async ValueTask<UserForResultDto> ModifyUserAsync(UserForUpdateDto dto)
+	{
+		var user = await this.userReposotpry.SelectAsync(u => u.Id == dto.Id);
+		if (user is null)
+			throw new CustomException(404, "User is not found ");
 
-    public async ValueTask<Response<UserDto>> GetUserByIdAsync(long id)
-    {
-        User user = await this.userRepository.SelectUserAsync(user => user.Id.Equals(id));
-        if (user is null)
-            return new Response<UserDto>
-            {
-                Code = 404,
-                Message = "Couldn't find for given ID",
-                Value = null
-            };
+		var result = this.mapper.Map(dto, user);
+		result.UpdatedAt = DateTime.UtcNow;
+		await this.userReposotpry.SaveAsync();
 
-        var mappedUsers = this.mapper.Map<UserDto>(user);
-        return new Response<UserDto>
-        {
-            Code = 200,
-            Message = "Success",
-            Value = mappedUsers
-        };
-    }
-
-    public async ValueTask<Response<UserDto>> ModifyUserAsync(long id, UserForCreationDto userForCreationDto)
-    {
-        User user = await this.userRepository.SelectUserAsync(user => user.Id.Equals(id));
-        if (user is null)
-            return new Response<UserDto>
-            {
-                Code = 404,
-                Message = "Couldn't find for given ID",
-                Value = null
-            };
-
-        var updatedUser = await this.userRepository.UpdateUserAsync(user);
-        var mappedUsers = this.mapper.Map<UserDto>(updatedUser);
-        return new Response<UserDto>
-        {
-            Code = 200,
-            Message = "Success",
-            Value = mappedUsers
-        };
-    }
+		return this.mapper.Map<UserForResultDto>(result);
+	}
 }

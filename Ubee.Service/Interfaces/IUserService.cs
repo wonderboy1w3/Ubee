@@ -1,14 +1,13 @@
-﻿using Ubee.Domain.Configurations;
-using Ubee.Service.DTOs;
-using Ubee.Service.Helpers;
+﻿using Ubee.Service.DTOs.Users;
+using Ubee.Domain.Configurations;
 
 namespace Ubee.Service.Interfaces;
 
 public interface IUserService 
 {
-    ValueTask<Response<UserDto>> AddUserAsync(UserForCreationDto userForCreationDto);
-    ValueTask<Response<UserDto>> ModifyUserAsync(long id, UserForCreationDto userForCreationDto);
-    ValueTask<Response<bool>> DeleteUserAsync(long id);
-    ValueTask<Response<UserDto>> GetUserByIdAsync(long id);
-    ValueTask<Response<List<UserDto>>> GetAllUserAsync(PaginationParams @params, string search = null);
+    ValueTask<bool> RemoveUserAsync(long id);
+    ValueTask<UserForResultDto> RetrieveUserByIdAsync(long id);
+    ValueTask<UserForResultDto> ModifyUserAsync(UserForUpdateDto userForUpdateDto);
+    ValueTask<UserForResultDto> AddUserAsync(UserForCreationDto userForCreationDto);
+    ValueTask<IEnumerable<UserForResultDto>> RetrieveAllUserAsync(PaginationParams @params, string search = null);
 }

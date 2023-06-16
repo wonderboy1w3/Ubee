@@ -8,8 +8,8 @@ namespace Ubee.Data.Repositories;
 
 public class Repository<TEntity> : IRepository<TEntity> where TEntity : Auditable
 {
-    protected readonly AppDbContext dbContext;
     protected readonly DbSet<TEntity> dbSet;
+    protected readonly AppDbContext dbContext;
     public Repository(AppDbContext dbContext)
     {
         this.dbContext = dbContext;
