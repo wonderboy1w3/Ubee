@@ -398,3 +398,6 @@ FodyWeavers.xsd
 # JetBrains Rider
 *.sln.iml
 /Qualification.Api/wwwroot/Certificates
+Ubee.Web/appsettings.json
+Ubee.Web/appsettings.Development.json
+Ubee.Web/Logs

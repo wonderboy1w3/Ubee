@@ -3,13 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.1.32407.343
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ubee", "Ubee\Ubee.csproj", "{3CD5967F-1D88-4720-8721-B0217A31A19E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ubee.Domain", "Ubee.Domain\Ubee.Domain.csproj", "{AA41D60F-ECC7-4883-88E5-3FA077664920}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ubee.Domain", "Ubee.Domain\Ubee.Domain.csproj", "{AA41D60F-ECC7-4883-88E5-3FA077664920}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ubee.Data", "Ubee.Data\Ubee.Data.csproj", "{5EC78CBD-73E3-4ED5-8C80-FFFD0896E0A4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ubee.Data", "Ubee.Data\Ubee.Data.csproj", "{5EC78CBD-73E3-4ED5-8C80-FFFD0896E0A4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ubee.Service", "Ubee.Service\Ubee.Service.csproj", "{3638800E-64A9-4643-94BF-1839D9A55149}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ubee.Service", "Ubee.Service\Ubee.Service.csproj", "{3638800E-64A9-4643-94BF-1839D9A55149}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ubee.Web", "Ubee.Web\Ubee.Web.csproj", "{E92DC376-8168-4FEB-BCFC-E976ADA6792E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,10 +17,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{3CD5967F-1D88-4720-8721-B0217A31A19E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3CD5967F-1D88-4720-8721-B0217A31A19E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3CD5967F-1D88-4720-8721-B0217A31A19E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3CD5967F-1D88-4720-8721-B0217A31A19E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{AA41D60F-ECC7-4883-88E5-3FA077664920}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{AA41D60F-ECC7-4883-88E5-3FA077664920}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AA41D60F-ECC7-4883-88E5-3FA077664920}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -33,6 +29,10 @@ Global
 		{3638800E-64A9-4643-94BF-1839D9A55149}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3638800E-64A9-4643-94BF-1839D9A55149}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3638800E-64A9-4643-94BF-1839D9A55149}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E92DC376-8168-4FEB-BCFC-E976ADA6792E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E92DC376-8168-4FEB-BCFC-E976ADA6792E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E92DC376-8168-4FEB-BCFC-E976ADA6792E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E92DC376-8168-4FEB-BCFC-E976ADA6792E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
