@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Ubee.Domain.Entities;
 using Ubee.Service.DTOs;
+using Ubee.Service.DTOs.Categories;
 using Ubee.Service.DTOs.Users;
 
 namespace Ubee.Service.Mappers;
@@ -14,8 +15,14 @@ public class MappingProfile : Profile
         //CreateMap<InfoCreationDto, Info>().ReverseMap();
 
         // User
-        CreateMap<UserForResultDto, User>().ReverseMap();
-        CreateMap<UserForCreationDto, User>().ReverseMap();
+        CreateMap<User, UserForResultDto>().ReverseMap();
+        CreateMap<User, UserForUpdateDto>().ReverseMap();
+        CreateMap<User, UserForCreationDto>().ReverseMap();
+
+        // Category
+        CreateMap<Category, CategoryForResultDto>().ReverseMap();
+        CreateMap<Category, CategoryForUpdateDto>().ReverseMap();
+        CreateMap<Category, CategoryForCreationDto>().ReverseMap();
 
         // Wallet
         //CreateMap<WalletDto, Wallet>().ReverseMap();

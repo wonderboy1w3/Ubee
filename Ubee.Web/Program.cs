@@ -4,6 +4,8 @@ using Ubee.Service.Mappers;
 using Ubee.Web.Extensions;
 using Ubee.Web.Middlewares;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc.ApplicationModels;
+using Ubee.Web.Helpers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +19,12 @@ builder.Services.AddDbContext<AppDbContext>(option =>
 // Add MappingProfile
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 builder.Services.AddControllers();
+
+//Convert  Api url name to dash case 
+builder.Services.AddControllers(options =>
+	options.Conventions.Add(
+		new RouteTokenTransformerConvention(new RouteConfiguration())));
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
