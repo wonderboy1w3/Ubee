@@ -12,6 +12,7 @@ namespace Ubee.Web.Extensions
 			services.AddScoped<IUserService, UserService>();
 			services.AddScoped<ICategoryService, CategoryService>();
 			services.AddScoped(typeof(IRepository<>),typeof(Repository<>));
+			services.AddScoped<ICategoryDetailService, CategoryDetailService>();
 		}
 	}
 }
