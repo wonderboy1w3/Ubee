@@ -10,6 +10,7 @@ namespace Ubee.Web.Extensions
 		public static void AddCustomService(this IServiceCollection services)
 		{
 			services.AddScoped<IUserService, UserService>();
+			services.AddScoped<ICategoryService, CategoryService>();
 			services.AddScoped(typeof(IRepository<>),typeof(Repository<>));
 		}
 	}

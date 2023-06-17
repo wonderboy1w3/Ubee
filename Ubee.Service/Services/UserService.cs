@@ -48,7 +48,7 @@ public class UserService : IUserService
 
 	public async ValueTask<IEnumerable<UserForResultDto>> RetrieveAllUserAsync(PaginationParams @params, string search = null)
 	{
-		var users = await this.userReposotpry.SelectAll()
+		var users = await this.userReposotpry.SelectAll(u => !u.IsDeleted)
 			.ToPagedList(@params).ToListAsync();
 		if (!string.IsNullOrWhiteSpace(search))
 		{
