@@ -1,121 +1,82 @@
-﻿//using AutoMapper;
-//using Microsoft.EntityFrameworkCore;
-//using Ubee.Data.IRepositories;
-//using Ubee.Data.Repositories;
-//using Ubee.Domain.Entities;
-//using Ubee.Service.DTOs;
-//using Ubee.Service.Helpers;
-//using Ubee.Service.Interfaces;
+﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
+using Ubee.Data.IRepositories;
+using Ubee.Domain.Configurations;
+using Ubee.Domain.Entities;
+using Ubee.Service.DTOs;
+using Ubee.Service.DTOs.Users;
+using Ubee.Service.DTOs.Wallet;
+using Ubee.Service.Exceptions;
+using Ubee.Service.Extensions;
+using Ubee.Service.Interfaces;
 
-//namespace Ubee.Service.Services;
+namespace Ubee.Service.Services;
 
-//public class WalletService : IWalletService
-//{
+public class WalletService : IWalletService
+{
 
-//    //I call the repository by constructor
-//    private readonly IRepository walletRepository;
-//    private readonly IMapper mapper;
-//    public WalletService(IRepository walletRepository, IMapper mapper)
-//    {
-//        this.walletRepository = walletRepository;
-//        this.mapper = mapper;
-//    }
+    //I call the repository by constructor
+    private readonly IRepository<Wallet> walletRepository;
+    private readonly IMapper mapper;
+    public WalletService(IRepository<Wallet> walletRepository, IMapper mapper)
+    {
+        this.walletRepository = walletRepository;
+        this.mapper = mapper;
+    }
 
-//    public async ValueTask<Response<WalletDto>> AddWalletAsync(WalletForCreationDto walletForCreationDto)
-//    {
-//        var user = await this.walletRepository.SelectWalletAsync(u => u.Id == walletForCreationDto.UserId);
+    public async ValueTask<WalletForResultDto> AddAsync(WalletForCreationDto walletForCreationDto)
+    {
+        var user = await this.walletRepository.SelectAsync(u => u.Id == walletForCreationDto.UserId);
 
-//        if (user is null)
-//            return new Response<WalletDto>
-//            {
-//                Code = 404,
-//                Message = "Wallet not found",
-//                Value = null
-//            };
+        if (user is not null)
+            throw new CustomException(409, "Wallet already exist");
 
 
-//        var mappedWallet = this.mapper.Map<Wallet>(walletForCreationDto);
-//        var addedWallet = await this.walletRepository.InsertWalletAsync(mappedWallet);
-//        var resultDto = this.mapper.Map<WalletDto>(addedWallet);
-//        return new Response<WalletDto>
-//        {
-//            Code = 200,
-//            Message = "Success",
-//            Value = resultDto
-//        };
-//    }
+        var mappedWallet = this.mapper.Map<Wallet>(walletForCreationDto);
+        var addedWallet = await this.walletRepository.InsertAsync(mappedWallet);
+        await walletRepository.SaveAsync();
+        return this.mapper.Map<WalletForResultDto>(addedWallet);
+    }
 
-//    public async ValueTask<Response<bool>> DeleteWalletAsync(long id)
-//    {
-//        Wallet wallet = await this.walletRepository.SelectWalletAsync(w => w.Id.Equals(id));
-//        if (wallet is null)
-//            return new Response<bool>
-//            {
-//                Code = 404,
-//                Message = "Couldn't find for given ID",
-//                Value = false
-//            };
+ 
+    public async ValueTask<WalletForResultDto> ModifyAsync(long id, WalletForUpdateDto dto)
+    {
+        var wallet = await this.walletRepository.SelectAsync(w=>w.Id == id);
+        if (wallet is null || wallet.IsDeleted)
+            throw new CustomException(404, "Wallet not found");
 
-//        await this.walletRepository.DeleteWalletAysnyc(id);
-//        return new Response<bool>
-//        {
-//            Code = 200,
-//            Message = "Success",
-//            Value = true
-//        };
-//    }
+        var mapped = mapper.Map(dto,wallet);
+        mapped.UpdatedAt = DateTime.UtcNow;
+        await walletRepository.SaveAsync();
+        return this.mapper.Map<WalletForResultDto>(mapped);
+    }
 
-//    public async ValueTask<Response<List<WalletDto>>> GetAllWalletAsync()
-//    {
-//        var wallets = await walletRepository.SelectAllWallets().ToListAsync();
-//        var mappedWallets = mapper.Map<List<WalletDto>>(wallets);
+    public async ValueTask<bool> RemoveAsync(long id)
+    {
+        var entity = await walletRepository.SelectAsync(w => w.Id == id);
+        if (entity is null || entity.IsDeleted)
+            throw new CustomException(404, "Couldn't find user for this given Id");
 
-//        return new Response<List<WalletDto>>
-//        {
-//            Code = 200,
-//            Message = "Success",
-//            Value = mappedWallets
-//        };
-//    }
+        await walletRepository.DeleteAysnyc(w=>w.Id== id);
+        await walletRepository.SaveAsync();
+        return true;
+    }
 
-//    public async ValueTask<Response<WalletDto>> GetWalletByIdAsync(long id)
-//    {
-//        Wallet wallet = await this.walletRepository.SelectWalletAsync(w => w.Id.Equals(id));
-//        if (wallet is null)
-//            return new Response<WalletDto>
-//            {
-//                Code = 404,
-//                Message = "Couldn't find for given ID",
-//                Value = null
-//            };
+    public async ValueTask<IEnumerable<WalletForResultDto>> RetrieveAllAsync(PaginationParams @params)
+    {
+        var wallets = await walletRepository.SelectAll()
+            .Where(u => u.IsDeleted == false)
+            .ToPagedList(@params)
+            .ToListAsync();
 
-//        var mappedWallets = this.mapper.Map<WalletDto>(wallet);
-//        return new Response<WalletDto>
-//        {
-//            Code = 200,
-//            Message = "Success",
-//            Value = mappedWallets
-//        };
-//    }
+        return mapper.Map<IEnumerable<WalletForResultDto>>(wallets);
+    }
 
-//    public async ValueTask<Response<WalletDto>> ModifyWalletAsync(long id, WalletForCreationDto walletForCreationDto)
-//    {
-//        Wallet wallet = await this.walletRepository.SelectWalletAsync(w => w.Id.Equals(id));
-//        if (wallet is null)
-//            return new Response<WalletDto>
-//            {
-//                Code = 404,
-//                Message = "Couldn't find for given ID",
-//                Value = null
-//            };
-
-//        var updatedWallet = await this.walletRepository.UpdateWalletAsync(wallet);
-//        var mappedWallet = this.mapper.Map<WalletDto>(updatedWallet);
-//        return new Response<WalletDto>
-//        {
-//            Code = 200,
-//            Message = "Success",
-//            Value = mappedWallet
-//        };
-//    }
-//}
+    public async ValueTask<WalletForResultDto> RetrieveByIdAsync(long id)
+    {
+        var wallet = await this.walletRepository.SelectAsync(w=>w.Id == id);
+        if (wallet is null || wallet.IsDeleted)
+            throw new CustomException(404, "Wallet not found");
+        return mapper.Map<WalletForResultDto>(wallet);
+    }
+}

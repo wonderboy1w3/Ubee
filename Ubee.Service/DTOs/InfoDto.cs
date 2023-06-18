@@ -13,6 +13,6 @@ namespace Ubee.Service.DTOs
         public DateTime SumRecordDate { get; set; }
 
         public long WalletId { get; set; }
-        public Wallet Wallet { get; set; }
+        public WalletForCreationDto Wallet { get; set; }
     }
 }
