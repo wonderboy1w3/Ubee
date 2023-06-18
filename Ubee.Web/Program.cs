@@ -1,11 +1,11 @@
 using Serilog;
+using Ubee.Web.Helpers;
 using Ubee.Data.Contexts;
-using Ubee.Service.Mappers;
 using Ubee.Web.Extensions;
 using Ubee.Web.Middlewares;
+using Ubee.Service.Mappers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
-using Ubee.Web.Helpers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,7 +27,7 @@ builder.Services.AddControllers(options =>
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();''
+builder.Services.AddSwaggerGen();
 
 // Logger
 var logger = new LoggerConfiguration()

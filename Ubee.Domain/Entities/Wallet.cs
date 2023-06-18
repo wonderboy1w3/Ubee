@@ -1,4 +1,5 @@
-﻿using Ubee.Domain.Commons;
+﻿using System.Text.Json.Serialization;
+using Ubee.Domain.Commons;
 
 namespace Ubee.Domain.Entities;
 
@@ -10,4 +11,9 @@ public class Wallet : Auditable
 	public Currency Currency { get; set; }
 	public long UserId { get; set; }
 	public User User { get; set; }
+
+	// EF Core Relationship
+	[JsonIgnore]
+	public ICollection<Info> Infos { get; set; }
+	public ICollection<Transaction> Transactions { get; set; }
 }
