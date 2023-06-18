@@ -31,7 +31,7 @@ namespace Ubee.Web.Controllers
             {
                 Code = 200,
                 Message = "Success",
-                Data = await this.service.ModifyAsync(id,dto)
+                Data = await this.service.ModifyAsync(dto)
             });
         }
         [HttpDelete("delete/{id:long}")]

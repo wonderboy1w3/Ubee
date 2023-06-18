@@ -11,7 +11,6 @@ public class Info : Auditable
     public DateTime DailyExposeDate { get; set; }
     public decimal SumRecord { get; set; }
     public DateTime SumRecordDate { get; set; }
-
     public long WalletId { get; set; }
     public Wallet Wallet { get; set; }
 }

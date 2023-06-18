@@ -1,14 +1,13 @@
 ﻿using AutoMapper;
-using Microsoft.EntityFrameworkCore;
-using Ubee.Data.IRepositories;
-using Ubee.Domain.Configurations;
-using Ubee.Domain.Entities;
 using Ubee.Service.DTOs;
-using Ubee.Service.DTOs.Users;
-using Ubee.Service.DTOs.Wallet;
+using Ubee.Domain.Entities;
+using Ubee.Data.IRepositories;
 using Ubee.Service.Exceptions;
 using Ubee.Service.Extensions;
 using Ubee.Service.Interfaces;
+using Ubee.Service.DTOs.Wallet;
+using Ubee.Domain.Configurations;
+using Microsoft.EntityFrameworkCore;
 
 namespace Ubee.Service.Services;
 
@@ -16,34 +15,36 @@ public class WalletService : IWalletService
 {
 
     //I call the repository by constructor
-    private readonly IRepository<Wallet> walletRepository;
     private readonly IMapper mapper;
-    public WalletService(IRepository<Wallet> walletRepository, IMapper mapper)
+    private readonly IUserService userService;
+    private readonly IRepository<Wallet> walletRepository;
+    public WalletService(IMapper mapper, 
+        IUserService userService,
+        IRepository<Wallet> walletRepository)
     {
-        this.walletRepository = walletRepository;
         this.mapper = mapper;
+        this.userService = userService;
+        this.walletRepository = walletRepository;
     }
 
     public async ValueTask<WalletForResultDto> AddAsync(WalletForCreationDto walletForCreationDto)
     {
-        var user = await this.walletRepository.SelectAsync(u => u.Id == walletForCreationDto.UserId);
-
-        if (user is not null)
-            throw new CustomException(409, "Wallet already exist");
-
-
+        // Check the user existing
+        var user = await this.userService.RetrieveUserByIdAsync(walletForCreationDto.UserId);
         var mappedWallet = this.mapper.Map<Wallet>(walletForCreationDto);
+        mappedWallet.CreatedAt = DateTime.UtcNow;
         var addedWallet = await this.walletRepository.InsertAsync(mappedWallet);
         await walletRepository.SaveAsync();
         return this.mapper.Map<WalletForResultDto>(addedWallet);
     }
 
  
-    public async ValueTask<WalletForResultDto> ModifyAsync(long id, WalletForUpdateDto dto)
+    public async ValueTask<WalletForResultDto> ModifyAsync(WalletForUpdateDto dto)
     {
-        var wallet = await this.walletRepository.SelectAsync(w=>w.Id == id);
+		var user = await this.userService.RetrieveUserByIdAsync(dto.UserId);
+		var wallet = await this.walletRepository.SelectAsync(w=>w.Id == dto.Id);
         if (wallet is null || wallet.IsDeleted)
-            throw new CustomException(404, "Wallet not found");
+            throw new CustomException(404, "Wallet is not found");
 
         var mapped = mapper.Map(dto,wallet);
         mapped.UpdatedAt = DateTime.UtcNow;
@@ -53,12 +54,12 @@ public class WalletService : IWalletService
 
     public async ValueTask<bool> RemoveAsync(long id)
     {
-        var entity = await walletRepository.SelectAsync(w => w.Id == id);
-        if (entity is null || entity.IsDeleted)
+        var wallet = await walletRepository.DeleteAysnyc(w => w.Id == id);
+        if (!wallet)
             throw new CustomException(404, "Couldn't find user for this given Id");
-
-        await walletRepository.DeleteAysnyc(w=>w.Id== id);
+        
         await walletRepository.SaveAsync();
+
         return true;
     }
 
@@ -75,8 +76,8 @@ public class WalletService : IWalletService
     public async ValueTask<WalletForResultDto> RetrieveByIdAsync(long id)
     {
         var wallet = await this.walletRepository.SelectAsync(w=>w.Id == id);
-        if (wallet is null || wallet.IsDeleted)
-            throw new CustomException(404, "Wallet not found");
+        if (wallet is null)
+            throw new CustomException(404, "Wallet is not found");
         return mapper.Map<WalletForResultDto>(wallet);
     }
 }
