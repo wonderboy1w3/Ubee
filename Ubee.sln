@@ -9,7 +9,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ubee.Data", "Ubee.Data\Ubee
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ubee.Service", "Ubee.Service\Ubee.Service.csproj", "{3638800E-64A9-4643-94BF-1839D9A55149}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ubee.Web", "Ubee.Web\Ubee.Web.csproj", "{E92DC376-8168-4FEB-BCFC-E976ADA6792E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ubee.Web", "Ubee.Web\Ubee.Web.csproj", "{E92DC376-8168-4FEB-BCFC-E976ADA6792E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ubee.Shared", "Ubee.Shared\Ubee.Shared.csproj", "{E93C2E50-97E3-4D9D-BBA0-922056CD6E77}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{E92DC376-8168-4FEB-BCFC-E976ADA6792E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E92DC376-8168-4FEB-BCFC-E976ADA6792E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E92DC376-8168-4FEB-BCFC-E976ADA6792E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E93C2E50-97E3-4D9D-BBA0-922056CD6E77}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E93C2E50-97E3-4D9D-BBA0-922056CD6E77}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E93C2E50-97E3-4D9D-BBA0-922056CD6E77}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E93C2E50-97E3-4D9D-BBA0-922056CD6E77}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

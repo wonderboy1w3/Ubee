@@ -2,13 +2,12 @@
 
 public class PaginationParams
 {
-    private const int maxSize = 20;
-    private int pageSize;
-
-    public int PageIndex { get; set; }
+    private const int _maxPageSize = 20;
+    private int _pageSize;
     public int PageSize
-    { 
-        get => pageSize; 
-        set => pageSize = value > maxSize ? maxSize : value; 
+    {
+        get => _pageSize == 0 ? 10 : _pageSize;
+        set => _pageSize = value > _maxPageSize ? _maxPageSize : value;
     }
+    public int PageIndex { get; set; } = 1;
 }
